@@ -15,10 +15,10 @@
 - [x] pip freeze > requirements.txt
 - [x] Create complete folder structure matching BACKEND_AGENT.md exactly
 - [x] Create .gitignore (venv/, .env, __pycache__/, *.pyc, .pytest_cache/)
-- [x] Create .env.example with all 5 keys: SUPABASE_URL, SUPABASE_KEY, SUPABASE_JWT_SECRET, DATABASE_URL, GEMINI_API_KEY, ENVIRONMENT
+- [ ] Create .env.example with these 4 keys: DATABASE_URL, AUTH_JWT_SECRET, GEMINI_API_KEY, ENVIRONMENT
 - [x] Create app/config.py using pydantic-settings, reads all env vars, raises clear error if any missing
 - [x] Create app/database.py with async SQLAlchemy engine using DATABASE_URL and async session factory
-- [x] Create SQLAlchemy model: users (id, email, name, language, level, goal, created_at)
+- [ ] Create SQLAlchemy model: users (id, email, name, password_hash, language, level, goal, created_at)
 - [x] Create SQLAlchemy model: lessons (id, user_id FK, topics ARRAY, content JSONB, score, completed_at, created_at)
 - [x] Create SQLAlchemy model: mistakes (id, user_id FK, topic, error_type, frequency, last_seen, created_at, UNIQUE user_id+topic+error_type)
 - [x] Create SQLAlchemy model: sm2_cards (id, user_id FK, topic, ease_factor, interval, repetition, next_review DATE, created_at, UNIQUE user_id+topic)
@@ -118,9 +118,9 @@
 > Add each endpoint to postman_collection.json immediately after building it.
 
 - [ ] Create app/routers/auth.py
-- [ ] POST /auth/register: Supabase sign_up + insert users row + return user_id + access_token
-- [ ] POST /auth/login: Supabase sign_in + fetch user row + return access_token + user profile
-- [ ] POST /auth/logout: Supabase sign_out + return success
+- [ ] POST /auth/register: validate input + hash password + insert users row + return user_id + access_token
+- [ ] POST /auth/login: verify password + return access_token + user profile
+- [ ] POST /auth/logout: clear client session contract + return success
 - [ ] Add all 3 auth endpoints to postman_collection.json with examples and test scripts
 - [ ] Login test script saves access_token as {{auth_token}} environment variable
 
@@ -147,8 +147,8 @@
 ## Phase 6 — JWT Middleware
 
 - [ ] Create app/utils/jwt_middleware.py
-- [ ] Implement get_current_user dependency using PyJWT to decode Supabase JWT
-- [ ] Use SUPABASE_JWT_SECRET from config
+- [ ] Implement get_current_user dependency using PyJWT to decode custom backend JWT
+- [ ] Use AUTH_JWT_SECRET from config
 - [ ] Extract sub field as user_id
 - [ ] Raise HTTPException 401 on expired token
 - [ ] Raise HTTPException 401 on invalid token
