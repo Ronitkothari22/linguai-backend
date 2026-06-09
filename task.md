@@ -15,7 +15,7 @@
 - [x] pip freeze > requirements.txt
 - [x] Create complete folder structure matching BACKEND_AGENT.md exactly
 - [x] Create .gitignore (venv/, .env, __pycache__/, *.pyc, .pytest_cache/)
-- [ ] Create .env.example with these 4 keys: DATABASE_URL, AUTH_JWT_SECRET, GEMINI_API_KEY, ENVIRONMENT
+- [x] Create .env.example with these 4 keys: DATABASE_URL, AUTH_JWT_SECRET, GEMINI_API_KEY, ENVIRONMENT
 - [x] Create app/config.py using pydantic-settings, reads all env vars, raises clear error if any missing
 - [x] Create app/database.py with async SQLAlchemy engine using DATABASE_URL and async session factory
 - [ ] Create SQLAlchemy model: users (id, email, name, password_hash, language, level, goal, created_at)
@@ -37,28 +37,28 @@
 
 ## Phase 2 — SM-2 Engine
 
-- [ ] Create app/services/sm2_engine.py
-- [ ] Implement update_sm2(quality, ease_factor, interval, repetition) -> dict
-- [ ] quality < 3: reset repetition to 0, interval to 1
-- [ ] quality >= 3, repetition 0: interval = 1
-- [ ] quality >= 3, repetition 1: interval = 6
-- [ ] quality >= 3, repetition > 1: interval = round(interval * ease_factor)
-- [ ] quality >= 3: repetition += 1
-- [ ] ease_factor = ease_factor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02))
-- [ ] ease_factor floor: max(1.3, new_ef)
-- [ ] next_review_date = date.today() + timedelta(days=new_interval)
-- [ ] Return dict with ease_factor, interval, repetition, next_review_date
-- [ ] Create tests/test_sm2.py
-- [ ] Test quality=5: ease_factor increases, interval grows beyond 6 on 3rd repetition
-- [ ] Test quality=3: ease_factor stays close to starting value
-- [ ] Test quality=2: repetition resets to 0, interval resets to 1
-- [ ] Test quality=0: full reset
-- [ ] Test repetition=0: interval must equal 1
-- [ ] Test repetition=1: interval must equal 6
-- [ ] Test ease_factor never drops below 1.3 even with repeated quality=0
-- [ ] Test next_review_date is always >= today
-- [ ] Test return dict has all 4 required keys
-- [ ] pytest tests/test_sm2.py -v — all tests pass, paste output into task.md test log
+- [x] Create app/services/sm2_engine.py
+- [x] Implement update_sm2(quality, ease_factor, interval, repetition) -> dict
+- [x] quality < 3: reset repetition to 0, interval to 1
+- [x] quality >= 3, repetition 0: interval = 1
+- [x] quality >= 3, repetition 1: interval = 6
+- [x] quality >= 3, repetition > 1: interval = round(interval * ease_factor)
+- [x] quality >= 3: repetition += 1
+- [x] ease_factor = ease_factor + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02))
+- [x] ease_factor floor: max(1.3, new_ef)
+- [x] next_review_date = date.today() + timedelta(days=new_interval)
+- [x] Return dict with ease_factor, interval, repetition, next_review_date
+- [x] Create tests/test_sm2.py
+- [x] Test quality=5: ease_factor increases, interval grows beyond 6 on 3rd repetition
+- [x] Test quality=3: ease_factor stays close to starting value
+- [x] Test quality=2: repetition resets to 0, interval resets to 1
+- [x] Test quality=0: full reset
+- [x] Test repetition=0: interval must equal 1
+- [x] Test repetition=1: interval must equal 6
+- [x] Test ease_factor never drops below 1.3 even with repeated quality=0
+- [x] Test next_review_date is always >= today
+- [x] Test return dict has all 4 required keys
+- [x] pytest tests/test_sm2.py -v — all tests pass, paste output into task.md test log
 - [ ] Commit: feat: SM-2 spaced repetition engine
 
 ---
@@ -219,7 +219,24 @@
 
 ### Phase 2 — SM-2 Engine
 ```
-paste pytest -v output here
+============================= test session starts ==============================
+platform linux -- Python 3.13.3, pytest-8.4.1, pluggy-1.6.0 -- /home/ronit/.pyenv/versions/3.13.3/bin/python3.13
+cachedir: .pytest_cache
+rootdir: /home/ronit/Documents/Projects/lingiai/linguai-backend
+plugins: anyio-4.13.0, langsmith-0.8.5
+collecting ... collected 9 items
+
+tests/test_sm2.py::test_quality_5_increases_ease_factor_and_grows_interval_beyond_six_on_third_review PASSED [ 11%]
+tests/test_sm2.py::test_quality_3_keeps_ease_factor_close_to_starting_value PASSED [ 22%]
+tests/test_sm2.py::test_quality_2_resets_repetition_and_interval PASSED  [ 33%]
+tests/test_sm2.py::test_quality_0_full_reset PASSED                      [ 44%]
+tests/test_sm2.py::test_repetition_zero_sets_interval_to_one PASSED      [ 55%]
+tests/test_sm2.py::test_repetition_one_sets_interval_to_six PASSED       [ 66%]
+tests/test_sm2.py::test_ease_factor_never_drops_below_one_point_three PASSED [ 77%]
+tests/test_sm2.py::test_next_review_date_is_always_today_or_later PASSED [ 88%]
+tests/test_sm2.py::test_return_dict_has_all_required_keys PASSED         [100%]
+
+============================== 9 passed in 0.06s ===============================
 ```
 
 ### Phase 3 — AI Evaluator
