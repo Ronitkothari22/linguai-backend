@@ -65,23 +65,23 @@
 
 ## Phase 3 — AI Evaluation Engine
 
-- [ ] Create app/services/ai_evaluator.py
-- [ ] Import and configure Gemini client using GEMINI_API_KEY from config, model gemini-1.5-flash
-- [ ] Create Pydantic model: EvaluationError (type, description, correction)
-- [ ] Create Pydantic model: EvaluationResult (errors list, topics_affected list, overall_quality_score int, feedback_message str)
-- [ ] Implement async evaluate_answer(user_answer, expected_answer, exercise_type, language) -> EvaluationResult
-- [ ] System prompt instructs Gemini to return JSON only, no markdown, no preamble
-- [ ] Parse Gemini response text as JSON and validate with EvaluationResult Pydantic model
-- [ ] On JSON parse failure: retry once with same inputs
-- [ ] On second failure: return fallback EvaluationResult with quality_score=0 and generic message
-- [ ] Function never raises an exception — always returns EvaluationResult
-- [ ] Create tests/test_ai_evaluator.py with unittest.mock patching Gemini client
-- [ ] Test: correct answer mock returns quality_score=5 and empty errors list
-- [ ] Test: wrong tense mock returns error with type="grammar" and topic "Past Tense" in topics_affected
-- [ ] Test: missing article mock returns grammar error
-- [ ] Test: malformed Gemini response triggers retry and then returns fallback
-- [ ] Test: fallback response has quality_score=0 and non-empty feedback_message
-- [ ] pytest tests/test_ai_evaluator.py -v — all tests pass, paste output into task.md test log
+- [x] Create app/services/ai_evaluator.py
+- [x] Import and configure Gemini client using GEMINI_API_KEY from config, model gemini-1.5-flash
+- [x] Create Pydantic model: EvaluationError (type, description, correction)
+- [x] Create Pydantic model: EvaluationResult (errors list, topics_affected list, overall_quality_score int, feedback_message str)
+- [x] Implement async evaluate_answer(user_answer, expected_answer, exercise_type, language) -> EvaluationResult
+- [x] System prompt instructs Gemini to return JSON only, no markdown, no preamble
+- [x] Parse Gemini response text as JSON and validate with EvaluationResult Pydantic model
+- [x] On JSON parse failure: retry once with same inputs
+- [x] On second failure: return fallback EvaluationResult with quality_score=0 and generic message
+- [x] Function never raises an exception — always returns EvaluationResult
+- [x] Create tests/test_ai_evaluator.py with unittest.mock patching Gemini client
+- [x] Test: correct answer mock returns quality_score=5 and empty errors list
+- [x] Test: wrong tense mock returns error with type="grammar" and topic "Past Tense" in topics_affected
+- [x] Test: missing article mock returns grammar error
+- [x] Test: malformed Gemini response triggers retry and then returns fallback
+- [x] Test: fallback response has quality_score=0 and non-empty feedback_message
+- [x] pytest tests/test_ai_evaluator.py -v — all tests pass, paste output into task.md test log
 - [ ] Commit: feat: AI evaluation engine
 
 ---
@@ -241,7 +241,34 @@ tests/test_sm2.py::test_return_dict_has_all_required_keys PASSED         [100%]
 
 ### Phase 3 — AI Evaluator
 ```
-paste pytest -v output here
+============================= test session starts ==============================
+platform linux -- Python 3.13.3, pytest-9.0.3, pluggy-1.6.0 -- /home/ronit/Documents/Projects/lingiai/linguai-backend/venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/ronit/Documents/Projects/lingiai/linguai-backend
+plugins: asyncio-1.4.0, anyio-4.13.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 5 items
+
+tests/test_ai_evaluator.py::test_correct_answer_mock_returns_quality_five_and_empty_errors_list PASSED [ 20%]
+tests/test_ai_evaluator.py::test_wrong_tense_mock_returns_grammar_error_and_past_tense_topic PASSED [ 40%]
+tests/test_ai_evaluator.py::test_missing_article_mock_returns_grammar_error PASSED [ 60%]
+tests/test_ai_evaluator.py::test_malformed_gemini_response_triggers_retry_and_then_returns_fallback PASSED [ 80%]
+tests/test_ai_evaluator.py::test_fallback_response_has_quality_zero_and_non_empty_feedback_message PASSED [100%]
+
+=============================== warnings summary ===============================
+app/services/ai_evaluator.py:6
+  /home/ronit/Documents/Projects/lingiai/linguai-backend/app/services/ai_evaluator.py:6: FutureWarning:
+
+  All support for the `google.generativeai` package has ended. It will no longer be receiving
+  updates or bug fixes. Please switch to the `google.genai` package as soon as possible.
+  See README for more details:
+
+  https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md
+
+    import google.generativeai as genai
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+========================= 5 passed, 1 warning in 1.62s =========================
 ```
 
 ### Phase 4 — Lesson Generator
