@@ -82,7 +82,7 @@
 - [x] Test: malformed Gemini response triggers retry and then returns fallback
 - [x] Test: fallback response has quality_score=0 and non-empty feedback_message
 - [x] pytest tests/test_ai_evaluator.py -v — all tests pass, paste output into task.md test log
-- [ ] Commit: feat: AI evaluation engine
+- [x] Commit: feat: AI evaluation engine
 
 ---
 
