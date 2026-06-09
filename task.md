@@ -88,27 +88,27 @@
 
 ## Phase 4 — Lesson Generator and Recommendation Engine
 
-- [ ] Create app/services/recommendation.py
-- [ ] Define STARTER_TOPICS dict: beginner (5 topics), intermediate (5 topics), advanced (5 topics) — use values from BACKEND_AGENT.md
-- [ ] Implement async get_due_topics(user_id, db, level) -> list[str]
-- [ ] Query sm2_cards WHERE user_id = user_id AND next_review <= today
-- [ ] Order by next_review ASC
-- [ ] Take top 5 results
-- [ ] If empty result: return STARTER_TOPICS[level]
-- [ ] Create app/services/lesson_generator.py
-- [ ] Implement async generate_lesson(user_id, topics, language, level, goal) -> dict
-- [ ] Build Gemini prompt specifying: language, level, goal, topics, exact exercise distribution (2 fill_blank, 1 sentence_correction, 1 translation, 1 vocabulary_match)
-- [ ] Prompt instructs Gemini to return JSON array only, no markdown
-- [ ] Parse response into list of exercise dicts
-- [ ] Add UUID id to each exercise
-- [ ] Build and return full lesson dict: lesson_id (new UUID), topics, exercises
-- [ ] Save lesson to lessons table in DB
-- [ ] Create tests/test_lesson_generator.py with mocked Gemini
-- [ ] Test: result always contains exactly 5 exercises
-- [ ] Test: each exercise has id, type, prompt, answer, hint, topic keys
-- [ ] Test: exercise types match expected distribution
-- [ ] Test: lesson is saved to DB (mock DB session)
-- [ ] pytest tests/test_lesson_generator.py -v — all tests pass, paste output into task.md test log
+- [x] Create app/services/recommendation.py
+- [x] Define STARTER_TOPICS dict: beginner (5 topics), intermediate (5 topics), advanced (5 topics) — use values from BACKEND_AGENT.md
+- [x] Implement async get_due_topics(user_id, db, level) -> list[str]
+- [x] Query sm2_cards WHERE user_id = user_id AND next_review <= today
+- [x] Order by next_review ASC
+- [x] Take top 5 results
+- [x] If empty result: return STARTER_TOPICS[level]
+- [x] Create app/services/lesson_generator.py
+- [x] Implement async generate_lesson(user_id, topics, language, level, goal) -> dict
+- [x] Build Gemini prompt specifying: language, level, goal, topics, exact exercise distribution (2 fill_blank, 1 sentence_correction, 1 translation, 1 vocabulary_match)
+- [x] Prompt instructs Gemini to return JSON array only, no markdown
+- [x] Parse response into list of exercise dicts
+- [x] Add UUID id to each exercise
+- [x] Build and return full lesson dict: lesson_id (new UUID), topics, exercises
+- [x] Save lesson to lessons table in DB
+- [x] Create tests/test_lesson_generator.py with mocked Gemini
+- [x] Test: result always contains exactly 5 exercises
+- [x] Test: each exercise has id, type, prompt, answer, hint, topic keys
+- [x] Test: exercise types match expected distribution
+- [x] Test: lesson is saved to DB (mock DB session)
+- [x] pytest tests/test_lesson_generator.py -v — all tests pass, paste output into task.md test log
 - [ ] Commit: feat: lesson generator and recommendation engine
 
 ---
@@ -271,9 +271,37 @@ app/services/ai_evaluator.py:6
 ========================= 5 passed, 1 warning in 1.62s =========================
 ```
 
-### Phase 4 — Lesson Generator
+### Phase 4 — Lesson Generator and Recommendation Engine
 ```
-paste pytest -v output here
+============================= test session starts ==============================
+platform linux -- Python 3.13.3, pytest-9.0.3, pluggy-1.6.0 -- /home/ronit/Documents/Projects/lingiai/linguai-backend/venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/ronit/Documents/Projects/lingiai/linguai-backend
+plugins: asyncio-1.4.0, anyio-4.13.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 6 items
+
+tests/test_lesson_generator.py::test_result_always_contains_exactly_five_exercises PASSED [ 16%]
+tests/test_lesson_generator.py::test_each_exercise_has_required_keys PASSED [ 33%]
+tests/test_lesson_generator.py::test_exercise_types_match_expected_distribution PASSED [ 50%]
+tests/test_lesson_generator.py::test_lesson_is_saved_to_db PASSED        [ 66%]
+tests/test_lesson_generator.py::test_get_due_topics_returns_most_overdue_topics_first PASSED [ 83%]
+tests/test_lesson_generator.py::test_get_due_topics_returns_starter_topics_when_no_cards_are_due PASSED [100%]
+
+=============================== warnings summary ===============================
+app/services/lesson_generator.py:7
+  /home/ronit/Documents/Projects/lingiai/linguai-backend/app/services/lesson_generator.py:7: FutureWarning:
+
+  All support for the `google.generativeai` package has ended. It will no longer be receiving
+  updates or bug fixes. Please switch to the `google.genai` package as soon as possible.
+  See README for more details:
+
+  https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md
+
+    import google.generativeai as genai
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+========================= 6 passed, 1 warning in 0.54s =========================
 ```
 
 ### Phase 7 — Integration
