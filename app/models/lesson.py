@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from uuid import uuid4
 
 from sqlalchemy import Float, ForeignKey, Text, TIMESTAMP, func
@@ -20,4 +21,8 @@ class Lesson(Base):
     content: Mapped[dict] = mapped_column(JSONB, nullable=False)
     score: Mapped[float | None] = mapped_column(Float)
     completed_at = mapped_column(TIMESTAMP(timezone=True), nullable=True)
-    created_at = mapped_column(TIMESTAMP(timezone=True), server_default=func.now())
+    created_at = mapped_column(
+        TIMESTAMP(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        server_default=func.now(),
+    )

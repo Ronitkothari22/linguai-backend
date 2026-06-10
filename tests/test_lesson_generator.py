@@ -149,7 +149,11 @@ async def test_get_due_topics_returns_most_overdue_topics_first():
     db = AsyncMock()
     db.execute.return_value = SimpleNamespace(
         scalars=lambda: SimpleNamespace(
-            all=lambda: ["Past Tense", "Articles", "Conditionals"]
+            all=lambda: [
+                SimpleNamespace(topic="Past Tense"),
+                SimpleNamespace(topic="Articles"),
+                SimpleNamespace(topic="Conditionals"),
+            ]
         )
     )
 

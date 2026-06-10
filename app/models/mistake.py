@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from uuid import uuid4
 
 from sqlalchemy import ForeignKey, Integer, Text, TIMESTAMP, UniqueConstraint, func
@@ -20,5 +21,13 @@ class Mistake(Base):
     topic: Mapped[str] = mapped_column(Text, nullable=False)
     error_type: Mapped[str] = mapped_column(Text, nullable=False)
     frequency: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
-    last_seen = mapped_column(TIMESTAMP(timezone=True), server_default=func.now())
-    created_at = mapped_column(TIMESTAMP(timezone=True), server_default=func.now())
+    last_seen = mapped_column(
+        TIMESTAMP(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        server_default=func.now(),
+    )
+    created_at = mapped_column(
+        TIMESTAMP(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        server_default=func.now(),
+    )

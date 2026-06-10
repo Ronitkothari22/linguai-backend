@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime, timezone
 from uuid import uuid4
 
 from sqlalchemy import Date, Float, ForeignKey, Integer, Text, TIMESTAMP, UniqueConstraint, func
@@ -23,4 +23,8 @@ class SM2Card(Base):
     interval: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
     repetition: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     next_review: Mapped[date] = mapped_column(Date, nullable=False, default=date.today)
-    created_at = mapped_column(TIMESTAMP(timezone=True), server_default=func.now())
+    created_at = mapped_column(
+        TIMESTAMP(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
+        server_default=func.now(),
+    )

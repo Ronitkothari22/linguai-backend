@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from uuid import uuid4
 
 from sqlalchemy import Float, ForeignKey, Text, TIMESTAMP, UniqueConstraint, func
@@ -21,6 +22,7 @@ class Progress(Base):
     mastery_score: Mapped[float] = mapped_column(Float, nullable=False, default=0.0)
     updated_at = mapped_column(
         TIMESTAMP(timezone=True),
+        default=lambda: datetime.now(timezone.utc),
         server_default=func.now(),
         onupdate=func.now(),
     )

@@ -17,6 +17,7 @@ class Lesson(BaseModel):
 
 
 class LessonSubmitRequest(BaseModel):
+    lesson_id: str
     exercise_id: str
     user_answer: str
 

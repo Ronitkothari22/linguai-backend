@@ -7,10 +7,20 @@ class UserCreate(BaseModel):
     name: str
 
 
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+
 class UserResponse(BaseModel):
     user_id: str
     email: str
     access_token: str
+
+
+class LoginResponse(BaseModel):
+    access_token: str
+    user_profile: "UserProfile"
 
 
 class UserProfile(BaseModel):
@@ -20,3 +30,6 @@ class UserProfile(BaseModel):
     language: str
     level: str
     goal: str
+
+
+LoginResponse.model_rebuild()

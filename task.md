@@ -18,7 +18,7 @@
 - [x] Create .env.example with these 4 keys: DATABASE_URL, AUTH_JWT_SECRET, GEMINI_API_KEY, ENVIRONMENT
 - [x] Create app/config.py using pydantic-settings, reads all env vars, raises clear error if any missing
 - [x] Create app/database.py with async SQLAlchemy engine using DATABASE_URL and async session factory
-- [ ] Create SQLAlchemy model: users (id, email, name, password_hash, language, level, goal, created_at)
+- [x] Create SQLAlchemy model: users (id, email, name, password_hash, language, level, goal, created_at)
 - [x] Create SQLAlchemy model: lessons (id, user_id FK, topics ARRAY, content JSONB, score, completed_at, created_at)
 - [x] Create SQLAlchemy model: mistakes (id, user_id FK, topic, error_type, frequency, last_seen, created_at, UNIQUE user_id+topic+error_type)
 - [x] Create SQLAlchemy model: sm2_cards (id, user_id FK, topic, ease_factor, interval, repetition, next_review DATE, created_at, UNIQUE user_id+topic)
@@ -117,63 +117,63 @@
 
 > Add each endpoint to postman_collection.json immediately after building it.
 
-- [ ] Create app/routers/auth.py
-- [ ] POST /auth/register: validate input + hash password + insert users row + return user_id + access_token
-- [ ] POST /auth/login: verify password + return access_token + user profile
-- [ ] POST /auth/logout: clear client session contract + return success
-- [ ] Add all 3 auth endpoints to postman_collection.json with examples and test scripts
-- [ ] Login test script saves access_token as {{auth_token}} environment variable
+- [x] Create app/routers/auth.py
+- [x] POST /auth/register: validate input + hash password + insert users row + return user_id + access_token
+- [x] POST /auth/login: verify password + return access_token + user profile
+- [x] POST /auth/logout: clear client session contract + return success
+- [x] Add all 3 auth endpoints to postman_collection.json with examples and test scripts
+- [x] Login test script saves access_token as {{auth_token}} environment variable
 
-- [ ] Create app/routers/onboarding.py
-- [ ] POST /onboarding/setup: update users row + create 5 sm2_cards + create 5 progress rows + return user_profile and starter_topics
-- [ ] Add to postman_collection.json
+- [x] Create app/routers/onboarding.py
+- [x] POST /onboarding/setup: update users row + create 5 sm2_cards + create 5 progress rows + return user_profile and starter_topics
+- [x] Add to postman_collection.json
 
-- [ ] Create app/routers/lessons.py
-- [ ] GET /lessons/today: check for existing today's lesson → if exists return it → if not generate new one via recommendation + lesson_generator
-- [ ] POST /lessons/submit: evaluate answer → upsert mistakes → update sm2_cards → update progress → return evaluation + topics_updated + mastery_snapshot
-- [ ] GET /lessons/history: paginated query of lessons table, query params limit and offset
-- [ ] Add all 3 lesson endpoints to postman_collection.json
+- [x] Create app/routers/lessons.py
+- [x] GET /lessons/today: check for existing today's lesson → if exists return it → if not generate new one via recommendation + lesson_generator
+- [x] POST /lessons/submit: evaluate answer → upsert mistakes → update sm2_cards → update progress → return evaluation + topics_updated + mastery_snapshot
+- [x] GET /lessons/history: paginated query of lessons table, query params limit and offset
+- [x] Add all 3 lesson endpoints to postman_collection.json
 
-- [ ] Create app/routers/progress.py
-- [ ] GET /progress/dashboard: calculate streak + fetch all progress rows + count weak topics + return DashboardResponse
-- [ ] GET /progress/weak-topics: query progress where mastery_score < 0.6, join sm2_cards for next_review, join mistakes for frequency
-- [ ] Add both progress endpoints to postman_collection.json
+- [x] Create app/routers/progress.py
+- [x] GET /progress/dashboard: calculate streak + fetch all progress rows + count weak topics + return DashboardResponse
+- [x] GET /progress/weak-topics: query progress where mastery_score < 0.6, join sm2_cards for next_review, join mistakes for frequency
+- [x] Add both progress endpoints to postman_collection.json
 
-- [ ] Confirm all 10 endpoints exist: /health, /auth/register, /auth/login, /auth/logout, /onboarding/setup, /lessons/today, /lessons/submit, /lessons/history, /progress/dashboard, /progress/weak-topics
+- [x] Confirm all 10 endpoints exist: /health, /auth/register, /auth/login, /auth/logout, /onboarding/setup, /lessons/today, /lessons/submit, /lessons/history, /progress/dashboard, /progress/weak-topics
 - [ ] Commit: feat: all API endpoints
 
 ---
 
 ## Phase 6 — JWT Middleware
 
-- [ ] Create app/utils/jwt_middleware.py
-- [ ] Implement get_current_user dependency using PyJWT to decode custom backend JWT
-- [ ] Use AUTH_JWT_SECRET from config
-- [ ] Extract sub field as user_id
-- [ ] Raise HTTPException 401 on expired token
-- [ ] Raise HTTPException 401 on invalid token
-- [ ] Raise HTTPException 401 if sub is missing
-- [ ] Apply dependency to onboarding, lessons, and progress routers
-- [ ] Do NOT apply to auth router or health endpoint
-- [ ] Manual test: request to GET /lessons/today without token returns 401
-- [ ] Manual test: request with valid token returns 200
+- [x] Create app/utils/jwt_middleware.py
+- [x] Implement get_current_user dependency using PyJWT to decode custom backend JWT
+- [x] Use AUTH_JWT_SECRET from config
+- [x] Extract sub field as user_id
+- [x] Raise HTTPException 401 on expired token
+- [x] Raise HTTPException 401 on invalid token
+- [x] Raise HTTPException 401 if sub is missing
+- [x] Apply dependency to onboarding, lessons, and progress routers
+- [x] Do NOT apply to auth router or health endpoint
+- [x] Manual test: request to GET /lessons/today without token returns 401
+- [x] Manual test: request with valid token returns 200
 - [ ] Commit: feat: JWT auth middleware
 
 ---
 
 ## Phase 7 — Integration Tests
 
-- [ ] Create tests/test_integration.py
-- [ ] Test full happy path: register → login → onboard → get today's lesson → submit one answer → get progress dashboard
-- [ ] Assert: after register, user exists in users table
-- [ ] Assert: after onboard, 5 sm2_cards exist for user
-- [ ] Assert: after submit with wrong answer, mistake row exists or frequency incremented
-- [ ] Assert: after submit, sm2_card for affected topic was updated
-- [ ] Assert: after submit, progress mastery_score was updated
-- [ ] Assert: GET /progress/dashboard returns streak >= 1 after first lesson submission
-- [ ] Edge case test: GET /lessons/today for brand new user returns starter lesson (not empty)
-- [ ] Edge case test: submit same answer twice for same exercise does not duplicate mistake rows
-- [ ] pytest tests/ -v — all tests across all files pass, paste output into task.md test log
+- [x] Create tests/test_integration.py
+- [x] Test full happy path: register → login → onboard → get today's lesson → submit one answer → get progress dashboard
+- [x] Assert: after register, user exists in users table
+- [x] Assert: after onboard, 5 sm2_cards exist for user
+- [x] Assert: after submit with wrong answer, mistake row exists or frequency incremented
+- [x] Assert: after submit, sm2_card for affected topic was updated
+- [x] Assert: after submit, progress mastery_score was updated
+- [x] Assert: GET /progress/dashboard returns streak >= 1 after first lesson submission
+- [x] Edge case test: GET /lessons/today for brand new user returns starter lesson (not empty)
+- [x] Edge case test: submit same answer twice for same exercise does not duplicate mistake rows
+- [x] pytest tests/ -v — all tests across all files pass, paste output into task.md test log
 - [ ] Commit: test: integration test suite
 
 ---
@@ -182,16 +182,16 @@
 
 | Method | Path | Built | Postman | Tested |
 |--------|------|-------|---------|--------|
-| GET | /health | [ ] | [ ] | [ ] |
-| POST | /auth/register | [ ] | [ ] | [ ] |
-| POST | /auth/login | [ ] | [ ] | [ ] |
-| POST | /auth/logout | [ ] | [ ] | [ ] |
-| POST | /onboarding/setup | [ ] | [ ] | [ ] |
-| GET | /lessons/today | [ ] | [ ] | [ ] |
-| POST | /lessons/submit | [ ] | [ ] | [ ] |
-| GET | /lessons/history | [ ] | [ ] | [ ] |
-| GET | /progress/dashboard | [ ] | [ ] | [ ] |
-| GET | /progress/weak-topics | [ ] | [ ] | [ ] |
+| GET | /health | [x] | [x] | [x] |
+| POST | /auth/register | [x] | [x] | [x] |
+| POST | /auth/login | [x] | [x] | [x] |
+| POST | /auth/logout | [x] | [x] | [x] |
+| POST | /onboarding/setup | [x] | [x] | [x] |
+| GET | /lessons/today | [x] | [x] | [x] |
+| POST | /lessons/submit | [x] | [x] | [x] |
+| GET | /lessons/history | [x] | [x] | [x] |
+| GET | /progress/dashboard | [x] | [x] | [x] |
+| GET | /progress/weak-topics | [x] | [x] | [x] |
 
 ---
 
@@ -199,11 +199,11 @@
 
 | Table | Model | Schema | In DB | Tested |
 |-------|-------|--------|-------|--------|
-| users | [ ] | [ ] | [ ] | [ ] |
-| lessons | [ ] | [ ] | [ ] | [ ] |
-| mistakes | [ ] | [ ] | [ ] | [ ] |
-| sm2_cards | [ ] | [ ] | [ ] | [ ] |
-| progress | [ ] | [ ] | [ ] | [ ] |
+| users | [x] | [x] | [ ] | [x] |
+| lessons | [x] | [x] | [ ] | [x] |
+| mistakes | [x] | [x] | [ ] | [x] |
+| sm2_cards | [x] | [x] | [ ] | [x] |
+| progress | [x] | [x] | [ ] | [x] |
 
 ---
 
@@ -306,5 +306,52 @@ app/services/lesson_generator.py:7
 
 ### Phase 7 — Integration
 ```
-paste pytest -v output here
+============================= test session starts ==============================
+platform linux -- Python 3.13.3, pytest-9.0.3, pluggy-1.6.0 -- /home/ronit/Documents/Projects/lingiai/linguai-backend/venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/ronit/Documents/Projects/lingiai/linguai-backend
+plugins: asyncio-1.4.0, anyio-4.13.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 25 items
+
+tests/test_ai_evaluator.py::test_correct_answer_mock_returns_quality_five_and_empty_errors_list PASSED [  4%]
+tests/test_ai_evaluator.py::test_wrong_tense_mock_returns_grammar_error_and_past_tense_topic PASSED [  8%]
+tests/test_ai_evaluator.py::test_missing_article_mock_returns_grammar_error PASSED [ 12%]
+tests/test_ai_evaluator.py::test_malformed_gemini_response_triggers_retry_and_then_returns_fallback PASSED [ 16%]
+tests/test_ai_evaluator.py::test_fallback_response_has_quality_zero_and_non_empty_feedback_message PASSED [ 20%]
+tests/test_integration.py::test_full_happy_path_register_login_onboard_lesson_submit_dashboard PASSED [ 24%]
+tests/test_integration.py::test_brand_new_user_gets_starter_lesson PASSED [ 28%]
+tests/test_integration.py::test_submitting_same_wrong_answer_twice_increments_frequency_without_duplicate_rows PASSED [ 32%]
+tests/test_integration.py::test_lessons_today_requires_token PASSED      [ 36%]
+tests/test_integration.py::test_lessons_today_accepts_valid_token PASSED [ 40%]
+tests/test_lesson_generator.py::test_result_always_contains_exactly_five_exercises PASSED [ 44%]
+tests/test_lesson_generator.py::test_each_exercise_has_required_keys PASSED [ 48%]
+tests/test_lesson_generator.py::test_exercise_types_match_expected_distribution PASSED [ 52%]
+tests/test_lesson_generator.py::test_lesson_is_saved_to_db PASSED        [ 56%]
+tests/test_lesson_generator.py::test_get_due_topics_returns_most_overdue_topics_first PASSED [ 60%]
+tests/test_lesson_generator.py::test_get_due_topics_returns_starter_topics_when_no_cards_are_due PASSED [ 64%]
+tests/test_sm2.py::test_quality_5_increases_ease_factor_and_grows_interval_beyond_six_on_third_review PASSED [ 68%]
+tests/test_sm2.py::test_quality_3_keeps_ease_factor_close_to_starting_value PASSED [ 72%]
+tests/test_sm2.py::test_quality_2_resets_repetition_and_interval PASSED  [ 76%]
+tests/test_sm2.py::test_quality_0_full_reset PASSED                      [ 80%]
+tests/test_sm2.py::test_repetition_zero_sets_interval_to_one PASSED      [ 84%]
+tests/test_sm2.py::test_repetition_one_sets_interval_to_six PASSED       [ 88%]
+tests/test_sm2.py::test_ease_factor_never_drops_below_one_point_three PASSED [ 92%]
+tests/test_sm2.py::test_next_review_date_is_always_today_or_later PASSED [ 96%]
+tests/test_sm2.py::test_return_dict_has_all_required_keys PASSED         [100%]
+
+=============================== warnings summary ===============================
+app/services/ai_evaluator.py:6
+  /home/ronit/Documents/Projects/lingiai/linguai-backend/app/services/ai_evaluator.py:6: FutureWarning:
+
+  All support for the `google.generativeai` package has ended. It will no longer be receiving
+  updates or bug fixes. Please switch to the `google.genai` package as soon as possible.
+  See README for more details:
+
+  https://github.com/google-gemini/deprecated-generative-ai-python/blob/main/README.md
+
+    import google.generativeai as genai
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+======================== 25 passed, 1 warning in 0.98s =========================
 ```

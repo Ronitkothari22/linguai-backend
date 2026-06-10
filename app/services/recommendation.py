@@ -37,12 +37,12 @@ async def get_due_topics(user_id: str, db: AsyncSession, level: str) -> list[str
     fallback_topics = STARTER_TOPICS.get(normalized_level, STARTER_TOPICS["beginner"])
 
     statement = (
-        select(SM2Card.topic)
+        select(SM2Card)
         .where(SM2Card.user_id == user_id, SM2Card.next_review <= date.today())
         .order_by(SM2Card.next_review.asc())
         .limit(5)
     )
     result = await db.execute(statement)
-    topics = list(result.scalars().all())
+    topics = [card.topic for card in result.scalars().all()]
 
     return topics or fallback_topics
