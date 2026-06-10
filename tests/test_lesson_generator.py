@@ -53,12 +53,11 @@ LESSON_RESPONSE = """
 
 @pytest.mark.asyncio
 async def test_result_always_contains_exactly_five_exercises():
-    model = MagicMock()
-    model.generate_content.return_value = SimpleNamespace(text=LESSON_RESPONSE)
+    response = SimpleNamespace(text=LESSON_RESPONSE)
     db = MagicMock()
     db.commit = AsyncMock()
 
-    with patch("app.services.lesson_generator._get_model", return_value=model):
+    with patch("app.services.lesson_generator._generate_content", return_value=response):
         result = await generate_lesson(
             user_id="user-123",
             topics=STARTER_TOPICS["beginner"],
@@ -73,12 +72,11 @@ async def test_result_always_contains_exactly_five_exercises():
 
 @pytest.mark.asyncio
 async def test_each_exercise_has_required_keys():
-    model = MagicMock()
-    model.generate_content.return_value = SimpleNamespace(text=LESSON_RESPONSE)
+    response = SimpleNamespace(text=LESSON_RESPONSE)
     db = MagicMock()
     db.commit = AsyncMock()
 
-    with patch("app.services.lesson_generator._get_model", return_value=model):
+    with patch("app.services.lesson_generator._generate_content", return_value=response):
         result = await generate_lesson(
             user_id="user-123",
             topics=STARTER_TOPICS["beginner"],
@@ -96,12 +94,11 @@ async def test_each_exercise_has_required_keys():
 
 @pytest.mark.asyncio
 async def test_exercise_types_match_expected_distribution():
-    model = MagicMock()
-    model.generate_content.return_value = SimpleNamespace(text=LESSON_RESPONSE)
+    response = SimpleNamespace(text=LESSON_RESPONSE)
     db = MagicMock()
     db.commit = AsyncMock()
 
-    with patch("app.services.lesson_generator._get_model", return_value=model):
+    with patch("app.services.lesson_generator._generate_content", return_value=response):
         result = await generate_lesson(
             user_id="user-123",
             topics=STARTER_TOPICS["beginner"],
@@ -120,12 +117,11 @@ async def test_exercise_types_match_expected_distribution():
 
 @pytest.mark.asyncio
 async def test_lesson_is_saved_to_db():
-    model = MagicMock()
-    model.generate_content.return_value = SimpleNamespace(text=LESSON_RESPONSE)
+    response = SimpleNamespace(text=LESSON_RESPONSE)
     db = MagicMock()
     db.commit = AsyncMock()
 
-    with patch("app.services.lesson_generator._get_model", return_value=model):
+    with patch("app.services.lesson_generator._generate_content", return_value=response):
         result = await generate_lesson(
             user_id="user-123",
             topics=STARTER_TOPICS["beginner"],

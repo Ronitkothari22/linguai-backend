@@ -4,9 +4,9 @@ import json
 from typing import Any
 from uuid import uuid4
 
-import google.generativeai as genai
 from pydantic import BaseModel, Field, ValidationError
 from sqlalchemy.ext.asyncio import AsyncSession
+from google import genai
 
 from app.config import get_settings
 from app.models.lesson import Lesson as LessonModel
@@ -32,10 +32,9 @@ class GeneratedLessonPayload(BaseModel):
     exercises: list[GeneratedExercise] = Field(min_length=5, max_length=5)
 
 
-def _get_model() -> genai.GenerativeModel:
+def _get_client() -> genai.Client:
     settings = get_settings()
-    genai.configure(api_key=settings.gemini_api_key)
-    return genai.GenerativeModel(MODEL_NAME)
+    return genai.Client(api_key=settings.gemini_api_key)
 
 
 def _build_prompt(topics: list[str], language: str, level: str, goal: str) -> str:
@@ -80,6 +79,15 @@ def _extract_response_text(response: Any) -> str:
     return str(text).strip()
 
 
+def _generate_content(prompt: str) -> Any:
+    client = _get_client()
+    return client.models.generate_content(
+        model=MODEL_NAME,
+        contents=prompt,
+        config={"response_mime_type": "application/json"},
+    )
+
+
 def _parse_generated_lesson(raw_text: str) -> list[GeneratedExercise]:
     payload = json.loads(raw_text)
     validated = GeneratedLessonPayload.model_validate(payload)
@@ -111,11 +119,7 @@ async def generate_lesson(
     db: AsyncSession,
 ) -> dict[str, Any]:
     prompt = _build_prompt(topics=topics, language=language, level=level, goal=goal)
-    model = _get_model()
-    response = model.generate_content(
-        prompt,
-        generation_config={"response_mime_type": "application/json"},
-    )
+    response = _generate_content(prompt)
 
     try:
         exercises = _parse_generated_lesson(_extract_response_text(response))

@@ -1,12 +1,23 @@
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.database import initialize_database
 from app.routers.auth import router as auth_router
 from app.routers.lessons import router as lessons_router
 from app.routers.onboarding import router as onboarding_router
 from app.routers.progress import router as progress_router
 
-app = FastAPI(title="LinguAI API", version="1.0.0")
+
+@asynccontextmanager
+async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+    await initialize_database()
+    yield
+
+
+app = FastAPI(title="LinguAI API", version="1.0.0", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,

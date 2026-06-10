@@ -3,8 +3,8 @@ from __future__ import annotations
 import json
 from typing import Any
 
-import google.generativeai as genai
 from pydantic import BaseModel, Field, ValidationError
+from google import genai
 
 from app.config import get_settings
 
@@ -41,10 +41,9 @@ class EvaluationResult(BaseModel):
     feedback_message: str
 
 
-def _get_model() -> genai.GenerativeModel:
+def _get_client() -> genai.Client:
     settings = get_settings()
-    genai.configure(api_key=settings.gemini_api_key)
-    return genai.GenerativeModel(MODEL_NAME)
+    return genai.Client(api_key=settings.gemini_api_key)
 
 
 def _build_prompt(
@@ -67,6 +66,15 @@ def _extract_response_text(response: Any) -> str:
     if isinstance(text, str):
         return text.strip()
     return str(text).strip()
+
+
+def _generate_content(prompt: str) -> Any:
+    client = _get_client()
+    return client.models.generate_content(
+        model=MODEL_NAME,
+        contents=prompt,
+        config={"response_mime_type": "application/json"},
+    )
 
 
 def _parse_evaluation_response(raw_text: str) -> EvaluationResult:
@@ -101,11 +109,7 @@ async def evaluate_answer(
 
     for _ in range(2):
         try:
-            model = _get_model()
-            response = model.generate_content(
-                prompt,
-                generation_config={"response_mime_type": "application/json"},
-            )
+            response = _generate_content(prompt)
             return _parse_evaluation_response(_extract_response_text(response))
         except (json.JSONDecodeError, ValidationError, Exception):
             continue

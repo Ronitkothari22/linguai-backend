@@ -1,7 +1,11 @@
 from functools import lru_cache
+from pathlib import Path
 
 from pydantic import ValidationError
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+BACKEND_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = BACKEND_ROOT.parent
 
 
 class Settings(BaseSettings):
@@ -11,7 +15,7 @@ class Settings(BaseSettings):
     environment: str = "development"
 
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file=(BACKEND_ROOT / ".env", REPO_ROOT / ".env"),
         env_file_encoding="utf-8",
         extra="ignore",
     )

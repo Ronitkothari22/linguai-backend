@@ -8,8 +8,7 @@ from app.services.ai_evaluator import EvaluationResult, evaluate_answer
 
 @pytest.mark.asyncio
 async def test_correct_answer_mock_returns_quality_five_and_empty_errors_list():
-    model = MagicMock()
-    model.generate_content.return_value = SimpleNamespace(
+    response = SimpleNamespace(
         text="""
         {
           "errors": [],
@@ -20,7 +19,7 @@ async def test_correct_answer_mock_returns_quality_five_and_empty_errors_list():
         """
     )
 
-    with patch("app.services.ai_evaluator._get_model", return_value=model):
+    with patch("app.services.ai_evaluator._generate_content", return_value=response):
         result = await evaluate_answer(
             user_answer="Hola",
             expected_answer="Hola",
@@ -35,8 +34,7 @@ async def test_correct_answer_mock_returns_quality_five_and_empty_errors_list():
 
 @pytest.mark.asyncio
 async def test_wrong_tense_mock_returns_grammar_error_and_past_tense_topic():
-    model = MagicMock()
-    model.generate_content.return_value = SimpleNamespace(
+    response = SimpleNamespace(
         text="""
         {
           "errors": [
@@ -53,7 +51,7 @@ async def test_wrong_tense_mock_returns_grammar_error_and_past_tense_topic():
         """
     )
 
-    with patch("app.services.ai_evaluator._get_model", return_value=model):
+    with patch("app.services.ai_evaluator._generate_content", return_value=response):
         result = await evaluate_answer(
             user_answer="I go market yesterday",
             expected_answer="I went to the market yesterday",
@@ -67,8 +65,7 @@ async def test_wrong_tense_mock_returns_grammar_error_and_past_tense_topic():
 
 @pytest.mark.asyncio
 async def test_missing_article_mock_returns_grammar_error():
-    model = MagicMock()
-    model.generate_content.return_value = SimpleNamespace(
+    response = SimpleNamespace(
         text="""
         {
           "errors": [
@@ -85,7 +82,7 @@ async def test_missing_article_mock_returns_grammar_error():
         """
     )
 
-    with patch("app.services.ai_evaluator._get_model", return_value=model):
+    with patch("app.services.ai_evaluator._generate_content", return_value=response):
         result = await evaluate_answer(
             user_answer="I went to market",
             expected_answer="I went to the market",
@@ -99,13 +96,12 @@ async def test_missing_article_mock_returns_grammar_error():
 
 @pytest.mark.asyncio
 async def test_malformed_gemini_response_triggers_retry_and_then_returns_fallback():
-    model = MagicMock()
-    model.generate_content.side_effect = [
+    responses = [
         SimpleNamespace(text="not valid json"),
         SimpleNamespace(text="{still not valid json"),
     ]
 
-    with patch("app.services.ai_evaluator._get_model", return_value=model):
+    with patch("app.services.ai_evaluator._generate_content", side_effect=responses) as mocked_generate:
         result = await evaluate_answer(
             user_answer="Bonjour",
             expected_answer="Bonjour",
@@ -113,14 +109,14 @@ async def test_malformed_gemini_response_triggers_retry_and_then_returns_fallbac
             language="French",
         )
 
-    assert model.generate_content.call_count == 2
+    assert mocked_generate.call_count == 2
     assert result.overall_quality_score == 0
 
 
 @pytest.mark.asyncio
 async def test_fallback_response_has_quality_zero_and_non_empty_feedback_message():
     with patch(
-        "app.services.ai_evaluator._get_model",
+        "app.services.ai_evaluator._generate_content",
         side_effect=RuntimeError("Gemini unavailable"),
     ):
         result = await evaluate_answer(
