@@ -11,7 +11,7 @@ from google import genai
 from app.config import get_settings
 from app.models.lesson import Lesson as LessonModel
 
-MODEL_NAME = "gemini-1.5-flash"
+MODEL_NAME = "gemini-2.5-flash"
 EXERCISE_DISTRIBUTION = {
     "fill_blank": 2,
     "sentence_correction": 1,
