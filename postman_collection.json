@@ -218,6 +218,101 @@
               "path": ["progress", "dashboard"]
             }
           }
+          ,
+          {
+            "name": "Conversations",
+            "item": [
+              {
+                "name": "POST /conversations/session",
+                "request": {
+                  "method": "POST",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "Authorization",
+                      "value": "Bearer {{auth_token}}"
+                    }
+                  ],
+                  "body": {
+                    "mode": "raw",
+                    "raw": "{}"
+                  },
+                  "url": {
+                    "raw": "{{base_url}}/conversations/session",
+                    "host": ["{{base_url}}"],
+                    "path": ["conversations", "session"]
+                  }
+                }
+              },
+              {
+                "name": "POST /conversations/webhook/deepgram (simulate)",
+                "event": [
+                  {
+                    "listen": "prerequest",
+                    "script": {
+                      "type": "text/javascript",
+                      "exec": [
+                        "// compute HMAC-SHA256 signature for the raw body using CryptoJS",
+                        "const secret = pm.environment.get('deepgram_webhook_secret') || pm.collectionVariables.get('deepgram_webhook_secret');",
+                        "const body = pm.request.body.raw || '';",
+                        "const sig = CryptoJS.HmacSHA256(body, secret).toString();",
+                        "pm.environment.set('dg_sig', sig);"
+                      ]
+                    }
+                  }
+                ],
+                "request": {
+                  "method": "POST",
+                  "header": [
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "X-Deepgram-Signature",
+                      "value": "sha256={{dg_sig}}"
+                    }
+                  ],
+                  "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"session_id\": \"test-session\",\n  \"is_final\": true,\n  \"channels\": [\n    {\n      \"alternatives\": [\n        {\n          \"transcript\": \"hello world\"\n        }\n      ]\n    }\n  ]\n}"
+                  },
+                  "url": {
+                    "raw": "{{base_url}}/conversations/webhook/deepgram",
+                    "host": ["{{base_url}}"],
+                    "path": ["conversations", "webhook", "deepgram"]
+                  }
+                }
+              },
+              {
+                "name": "WS example — connect & sample messages",
+                "request": {
+                  "method": "GET",
+                  "header": [
+                    {
+                      "key": "Authorization",
+                      "value": "Bearer {{auth_token}}"
+                    }
+                  ],
+                  "url": {
+                    "raw": "ws://{{host_ws}}/conversations/ws/{{session_id}}?token={{auth_token}}",
+                    "host": ["ws://{{host_ws}}"],
+                    "path": ["conversations", "ws", "{{session_id}}"],
+                    "query": [
+                      {
+                        "key": "token",
+                        "value": "{{auth_token}}"
+                      }
+                    ]
+                  },
+                  "description": "WebSocket example for the realtime conversation flow.\n\nAfter connecting to `ws://{{host_ws}}/conversations/ws/{session_id}` send JSON messages like:\n\n`{\"type\": \"transcript\", \"text\": \"hello world\"}`\n\nServer replies with a JSON message containing assistant text and base64-encoded audio:\n\n`{\"type\": \"assistant\", \"text\": \"Tutor reply...\", \"audio_base64\": \"...\", \"audio_mime\": \"audio/mpeg\"}`"
+                }
+              },
+            ]
+          }
         },
         {
           "name": "GET /progress/weak-topics",
@@ -238,6 +333,38 @@
         }
       ]
     }
+    ,
+    {
+      "name": "Transcript",
+      "item": [
+        {
+          "name": "POST /conversations/transcript",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{auth_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"session_id\": \"replace-with-session-id\",\n  \"text\": \"hello, I want to practice\"\n}"
+            },
+            "description": "Accepts a final transcript and returns the assistant reply. Response JSON: {\"type\":\"assistant\", \"text\":\"...\", \"audio_base64\":\"...\", \"audio_mime\":\"audio/mpeg\"}",
+            "url": {
+              "raw": "{{base_url}}/conversations/transcript",
+              "host": ["{{base_url}}"],
+              "path": ["conversations", "transcript"]
+            }
+          }
+        }
+      ]
+    }
   ],
   "variable": [
     {
@@ -247,6 +374,10 @@
     {
       "key": "auth_token",
       "value": ""
+    },
+    {
+      "key": "host_ws",
+      "value": "localhost:8000"
     }
   ]
 }

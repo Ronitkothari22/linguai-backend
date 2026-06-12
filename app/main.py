@@ -9,6 +9,7 @@ from app.routers.auth import router as auth_router
 from app.routers.lessons import router as lessons_router
 from app.routers.onboarding import router as onboarding_router
 from app.routers.progress import router as progress_router
+from app.routers.conversations import router as conversations_router
 
 
 @asynccontextmanager
@@ -31,6 +32,7 @@ app.include_router(auth_router)
 app.include_router(onboarding_router)
 app.include_router(lessons_router)
 app.include_router(progress_router)
+app.include_router(conversations_router)
 
 
 @app.get("/health")
